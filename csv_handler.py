@@ -2,6 +2,7 @@
 
 import csv
 
+
 def csv_to_json(header, data):
     json_data = []
     for line in data:
@@ -9,11 +10,13 @@ def csv_to_json(header, data):
         json_data.append(entry)
     return json_data
 
-def from_csv_file(filepath, delimiter=";", quotechar="\"", has_header=True):
+
+def from_csv_file(filepath, delimiter=";", quotechar="\"", has_header=True, return_dict=False):
     header = None
     data = []
     with open(filepath, mode="r", newline="") as file_stream:
-        reader = csv.reader(file_stream, delimiter=delimiter, quotechar=quotechar)
+        reader = csv.reader(
+            file_stream, delimiter=delimiter, quotechar=quotechar)
         if has_header:
             for index, row in enumerate(reader):
                 if index == 0:
@@ -22,15 +25,25 @@ def from_csv_file(filepath, delimiter=";", quotechar="\"", has_header=True):
                     data.append(row)
         else:
             data = [row for row in reader]
-    return (header, data)
+
+    if return_dict:
+        output = []
+        for line in data:
+            output.append(
+                {header[index]: field for index, field in enumerate(line)})
+        return output
+    else:
+        return (header, data)
+
 
 def to_csv_file(filepath, data, header=None, delimiter=";", quotechar="\""):
     with open(filepath, mode="w+", newline="") as file_stream:
-        writer = csv.writer(file_stream, delimiter=delimiter, quotechar=quotechar)
+        writer = csv.writer(
+            file_stream, delimiter=delimiter, quotechar=quotechar)
 
         if header != None:
             writer.writerow(header)
-        
+
         for entry in data:
             writer.writerow(entry)
     return True
